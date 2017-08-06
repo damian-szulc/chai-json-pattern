@@ -1,0 +1,43 @@
+{
+  "name": "chai-json-pattern",
+  "version": "1.0.0",
+  "description": "Chai JSONPattern assertions",
+  "main": "dist/main.js",
+  "scripts": {
+    "prepublish": "npm run build",
+    "build": "babel src/ -d dist/",
+    "lint": "./node_modules/.bin/eslint src/",
+    "lint-fix": "eslint src/ --fix",
+    "test": "mocha --compilers js:babel-core/register tests/*"
+  },
+  "author": {
+    "name": "Damian Szulc"
+  },
+  "repository": {
+    "type": "git"
+  },
+  "keywords": [
+    "testing",
+    "chai",
+    "json",
+    "json-pattern",
+    "deep",
+    "deep-equal",
+    "pattern"
+  ],
+  "engines": {
+    "node": ">= 4"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "babel-cli": "^6.22.2",
+    "babel-core": "^6.25.0",
+    "babel-preset-latest": "^6.22.0",
+    "babel-preset-stage-0": "^6.22.0",
+    "chai": "^2.1.2",
+    "eslint": "^3.14.1",
+    "eslint-config-brainhub": "^1.0.0",
+    "lodash": "^4.17.4",
+    "mocha": "^2.2.1"
+  }
+}

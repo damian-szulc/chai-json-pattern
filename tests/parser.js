@@ -1,6 +1,9 @@
 import { expect } from 'chai';
 import parser from '../src/parser';
 import {
+  TRUE,
+  FALSE,
+  NULL,
   LIKE,
   COMMAND,
   COMMAND_ARGS,
@@ -41,7 +44,7 @@ describe('parser', () => {
         }
       `;
       const { parsed, error } = parser(toParse);
-      expect(parsed).to.deep.equal({ name: 'test', bool: true });
+      expect(parsed).to.deep.equal({ name: 'test', bool: TRUE });
       expect(error).to.be.undefined;
     });
 
@@ -53,7 +56,7 @@ describe('parser', () => {
         }
       `;
       const { parsed, error } = parser(toParse);
-      expect(parsed).to.deep.equal({ name: 'test', bool: false });
+      expect(parsed).to.deep.equal({ name: 'test', bool: FALSE });
       expect(error).to.be.undefined;
     });
 
@@ -65,7 +68,7 @@ describe('parser', () => {
         }
       `;
       const { parsed, error } = parser(toParse);
-      expect(parsed).to.deep.equal({ name: 'test', bool: null });
+      expect(parsed).to.deep.equal({ name: 'test', bool: NULL });
       expect(error).to.be.undefined;
     });
 
@@ -76,7 +79,7 @@ describe('parser', () => {
         }
       `;
       const { parsed, error } = parser(toParse);
-      expect(parsed).to.deep.equal({ arr: [true, 2, 'string', {}] });
+      expect(parsed).to.deep.equal({ arr: [TRUE, 2, 'string', {}] });
       expect(error).to.be.undefined;
     });
 
@@ -91,7 +94,7 @@ describe('parser', () => {
         }
       `;
       const { parsed, error } = parser(toParse);
-      expect(parsed).to.deep.equal({ obj: { test: { c: null } } });
+      expect(parsed).to.deep.equal({ obj: { test: { c: NULL } } });
       expect(error).to.be.undefined;
     });
   });
@@ -142,7 +145,7 @@ describe('parser', () => {
         }
       `;
       const { parsed, error } = parser(toParse);
-      expect(parsed).to.deep.equal({ name: { [COMMAND]: 'test', [COMMAND_ARGS]: [true, null, 2.3, 'ola'] } });
+      expect(parsed).to.deep.equal({ name: { [COMMAND]: 'test', [COMMAND_ARGS]: [TRUE, NULL, 2.3, 'ola'] } });
       expect(error).to.be.undefined;
     });
 

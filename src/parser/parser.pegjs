@@ -19,18 +19,23 @@ ws "whitespace" = [ \t\n\r]*
 // ----- 3. Values -----
 
 value
-  = false
-  / null
-  / true
+  = pureFalse
+  / pureTrue
+  / pureNull
   / object
   / array
-  / number
-  / string
+  / pureNumber
+  / pureString
   / Expression
 
 false = "false" { return false; }
 null  = "null"  { return null;  }
 true  = "true"  { return true;  }
+
+// pure means that its not part of any expresssion
+pureFalse = !( OR / AND) s:false !( OR / AND ) { return s; }
+pureTrue = !( OR / AND) s:true !( OR / AND ) { return s; }
+pureNull = !( OR / AND) s:null !( OR / AND ) { return s; }
 
 // ----- 4. Objects -----
 
@@ -58,7 +63,7 @@ object
     { return members !== null ? members: {}; }
 
 member
-  = name:string name_separator value:value {
+  = name:pureString name_separator value:value {
       return { name: name, value: value };
     }
 
@@ -92,6 +97,8 @@ array2 =
 
 // ----- 6. Numbers -----
 
+pureNumber = !( OR / AND) s:number !( OR / AND ) { return s; }
+
 number "number"
   = minus? int frac? exp? { return parseFloat(text()); }
 
@@ -123,6 +130,8 @@ zero
   = "0"
 
 // ----- 7. Strings -----
+
+pureString = !( OR / AND) s:string !( OR / AND ) { return s; }
 
 string "string"
   = quotation_mark chars:char* quotation_mark { return chars.join(""); }
@@ -226,6 +235,11 @@ Term
 
 Factor
   = begin_prent expr:Expression end_prent { return expr; }
+  / true
+  / false
+  / null
+  / number
+  / string
   / command
 
 // ----- Core ABNF Rules -----

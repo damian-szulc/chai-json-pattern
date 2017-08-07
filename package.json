@@ -19,11 +19,8 @@
   "keywords": [
     "testing",
     "chai",
-    "json",
-    "json-pattern",
-    "deep",
-    "deep-equal",
-    "pattern"
+    "chai-plugin",
+    "json-pattern"
   ],
   "engines": {
     "node": ">= 4"

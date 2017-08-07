@@ -1,4 +1,7 @@
 import {
+  TRUE,
+  FALSE,
+  NULL,
   LIKE,
   COMMAND,
   COMMAND_ARGS,
@@ -60,6 +63,28 @@ export default utils => {
     return validator;
   };
 
+  /**
+   * Get arguments to command
+   * @param {array|any} args
+   */
+  const getCommandArgs = (args) => {
+    if (!args) {
+      return [];
+    }
+    return args.map(arg => {
+      if (arg === TRUE) {
+        return true;
+      }
+      if (arg === FALSE) {
+        return false;
+      }
+      if (arg === NULL) {
+        return null;
+      }
+      return arg;
+    });
+  };
+
   const service = {
     /**
      * Match value with custom validator
@@ -70,14 +95,14 @@ export default utils => {
      */
     matchCommand(object, expected, generateExpected = true) {
       if (!isValidator(expected)) {
-        return [false, ''];
+        return service.matchDefault(object, expected);
       }
       // match command
       if (isType(expected, COMMAND)) {
         const commandName = expected[COMMAND];
         const validator = getValidator(commandName);
 
-        const isValid = !!validator(object, ...(expected[COMMAND_ARGS] || []));
+        const isValid = !!validator(object, ...getCommandArgs(expected[COMMAND_ARGS]));
 
         return [isValid, isValid && generateExpected ? object : joinValidators(expected)];
       }
@@ -92,7 +117,7 @@ export default utils => {
         return [isValid, isValid && generateExpected ? object : joinValidators(expected)];
       }
 
-      throw Error('ChaiJsonPattern: Unknow command validation');
+      return service.matchDefault(object, expected);
     },
 
     /**
@@ -121,7 +146,7 @@ export default utils => {
       if (isType(object, 'object')) {
         let isLikeValid = true;
         Object.keys(object).forEach(key => {
-          if (!expectedValues[key]) {
+          if (!expectedValues.hasOwnProperty(key)) {
             // not valid if its extra property without ...
             if (!isLiked) {
               isLikeValid = false;
@@ -131,12 +156,10 @@ export default utils => {
             }
           }
         });
-
         isValid = isValid && isLikeValid;
       } else {
         isValid = false;
       }
-
       return [isValid, expectedValues];
     },
 
@@ -191,6 +214,15 @@ export default utils => {
      * @return {array}                  [description]
      */
     matchDefault(object, expected, validate = true) {
+      if (expected === TRUE) {
+        return [object === true, true];
+      }
+      if (expected === FALSE) {
+        return [object === false, false];
+      }
+      if (expected === NULL) {
+        return [object === null, null];
+      }
       if (object === expected) {
         return [validate, expected];
       }

@@ -1,5 +1,7 @@
 import {
-  LIKE,
+  TRUE,
+  FALSE,
+  NULL,
   COMMAND,
   COMMAND_ARGS,
   OR,
@@ -8,6 +10,18 @@ import {
 } from '../constants';
 
 const service = {
+  stringifyPrimitive(arg) {
+    if (arg === TRUE) {
+      return true;
+    }
+    if (arg === FALSE) {
+      return false;
+    }
+    if (arg === NULL) {
+      return null;
+    }
+    return JSON.stringify(arg);
+  },
   /**
    * Join command arguments
    * @param  {array|null} args [description]
@@ -17,7 +31,7 @@ const service = {
     if (!args) {
       return '';
     }
-    const joinedArgs = args.map(arg => JSON.stringify(arg)).join(', ');
+    const joinedArgs = args.map(service.stringifyPrimitive).join(', ');
     return `(${joinedArgs})`;
   },
 
@@ -56,7 +70,11 @@ const service = {
    * @param  {Number} [depth=0]      depth of command join
    * @return {string}                [description]
    */
-  join(validator = {}, depth = 0) {
+  join(validator, depth = 0) {
+    if (typeof validator !== 'object' || validator === null) {
+      return service.stringifyPrimitive(validator);
+    }
+
     if (validator[COMMAND]) {
       return service.joinCommand(validator);
     }
@@ -69,7 +87,6 @@ const service = {
       return service.joinArray(validator[AND], 'AND', depth);
     }
   },
-
 };
 
 export default service.join;

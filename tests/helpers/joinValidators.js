@@ -2,6 +2,9 @@ import { expect } from 'chai';
 import joinValidators from '../../src/helpers/joinValidators';
 
 import {
+  TRUE,
+  FALSE,
+  NULL,
   COMMAND,
   COMMAND_ARGS,
   OR,
@@ -9,6 +12,32 @@ import {
 } from '../../src/constants';
 
 describe('joinValidators', function() {
+  it('if its string, returns it', function() {
+    const validator = 'someText';
+    expect(joinValidators(validator)).to.equal('"someText"');
+  });
+
+  it('if its true, returns it', function() {
+    const validator = true;
+    expect(joinValidators(validator)).to.equal('true');
+  });
+
+  it('if its false, returns it', function() {
+    const validator = false;
+    expect(joinValidators(validator)).to.equal('false');
+  });
+
+  it('if its null, returns it', function() {
+    const validator = null;
+    expect(joinValidators(validator)).to.equal('null');
+  });
+
+  it('if its number, returns it', function() {
+    const validator = 123.23;
+    expect(joinValidators(validator)).to.equal('123.23');
+  });
+
+
   it('return COMMAND', function() {
     const validator = {
       [COMMAND]: 'validatorName',
@@ -20,7 +49,7 @@ describe('joinValidators', function() {
   it('return COMMAND with args', function() {
     const validator = {
       [COMMAND]: 'validatorName',
-      [COMMAND_ARGS]: ['test', 2.32, true],
+      [COMMAND_ARGS]: ['test', 2.32, TRUE],
     };
     expect(joinValidators(validator)).to.equal('validatorName("test", 2.32, true)');
   });
@@ -34,7 +63,7 @@ describe('joinValidators', function() {
         },
         {
           [COMMAND]: 'validatorName',
-          [COMMAND_ARGS]: ['test', 2.32, true],
+          [COMMAND_ARGS]: ['test', 2.32, TRUE],
         },
       ],
     };
@@ -50,7 +79,7 @@ describe('joinValidators', function() {
         },
         {
           [COMMAND]: 'validatorName',
-          [COMMAND_ARGS]: ['test', 2.32, true],
+          [COMMAND_ARGS]: ['test', 2.32, TRUE],
         },
       ],
     };
@@ -62,13 +91,13 @@ describe('joinValidators', function() {
       [AND]: [
         {
           [COMMAND]: 'validatorName',
-          [COMMAND_ARGS]: ['test', 2.32, true],
+          [COMMAND_ARGS]: ['test', 2.32, TRUE],
         },
         {
           [OR]: [
             {
               [COMMAND]: 'isString',
-              [COMMAND_ARGS]: [false],
+              [COMMAND_ARGS]: [FALSE],
             },
             {
               [COMMAND]: 'test2',

@@ -1,5 +1,5 @@
 import chai, { expect } from 'chai';
-import jsonPattern from '../dist/main';
+import jsonPattern from '../src/main';
 chai.use(jsonPattern);
 
 describe('chaiJsonPattern', function() {
@@ -121,6 +121,68 @@ describe('chaiJsonPattern', function() {
           },
           ...
         ]
+      `);
+    });
+  });
+
+  describe('matches OR/AND expressions', function() {
+    it('matches strings', function() {
+      const object = {
+        id: 'test',
+        name: 'test',
+        test: 'test',
+      };
+      expect(object).to.matchPattern(`
+        {
+          "id": "test" OR "test2",
+          "name": "test2" OR "test",
+          "test": "test" OR "test",
+        }
+      `);
+    });
+
+    it('matches numbers', function() {
+      const object = {
+        id: 213,
+        age: 112,
+        test: 112,
+      };
+      expect(object).to.matchPattern(`
+        {
+          "id": 213 OR 112,
+          "age": 112 OR 213,
+          "test": 112 OR 112,
+        }
+      `);
+    });
+
+    it('matches bools', function() {
+      const object = {
+        id: true,
+        some: true,
+        test1: false,
+        test2: false,
+      };
+      expect(object).to.matchPattern(`
+        {
+          "id": true OR false,
+          "some": false OR true,
+          "test1": true OR false,
+          "test2": false OR true,
+        }
+      `);
+    });
+
+    it('matches null', function() {
+      const object = {
+        id: null,
+        name: null,
+      };
+      expect(object).to.matchPattern(`
+        {
+          "id": null,
+          "name": true OR false OR number OR string OR null,
+        }
       `);
     });
   });

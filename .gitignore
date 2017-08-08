@@ -67,4 +67,6 @@ typings/
 # Mac files
 .DS_Store
 
+#Generated src code of pegjs parser
+src/parser/parser.js
 # Dist

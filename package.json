@@ -1,13 +1,16 @@
 {
   "name": "chai-json-pattern",
   "version": "1.0.0",
-  "description": "Chai JSONPattern assertions",
+  "description": "Chai JSON pattern assertions",
   "main": "dist/main.js",
   "scripts": {
     "prepublish": "npm run build",
+    "build-parser": "./node_modules/.bin/pegjs -o ./src/parser/parser.js ./src/parser/parser.pegjs",
+    "prebuild": "npm run build-parser",
     "build": "babel src/ -d dist/",
     "lint": "./node_modules/.bin/eslint src/",
     "lint-fix": "eslint src/ --fix",
+    "pretest": "npm run build-parser",
     "test": "mocha --compilers js:babel-core/register tests/*"
   },
   "author": {

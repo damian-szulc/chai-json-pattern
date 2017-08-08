@@ -1,5 +1,6 @@
-import pegjs from './pegjs';
+import pegjs from './parser';
 import errorMessage from './errorMessage';
+
 /**
  * Parser delivered json-pattern
  * @param  {string} expected [description]

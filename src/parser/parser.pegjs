@@ -28,9 +28,9 @@ value
   / pureString
   / Expression
 
-false = "false" { return false; }
-null  = "null"  { return null;  }
-true  = "true"  { return true;  }
+false = "false" { return "__FALSE__"; }
+null  = "null"  { return "__NULL__";  }
+true  = "true"  { return "__TRUE__";  }
 
 // pure means that its not part of any expresssion
 pureFalse = !( OR / AND) s:false !( OR / AND ) { return s; }

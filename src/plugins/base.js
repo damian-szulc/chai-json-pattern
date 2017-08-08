@@ -18,12 +18,12 @@ import {
   isNull,
   isNumber,
   isObject,
-  isObjectLike,
-  isPlainObject,
   isRegExp,
   isSafeInteger,
   isString,
   isUndefined,
+  kebabCase as _kebabCase,
+  lowerCase as _lowerCase,
 } from 'lodash';
 
 export default function() {
@@ -31,7 +31,6 @@ export default function() {
     inRange,
     isArray,
     isArrayBuffer,
-    isBoolean,
     isBuffer,
     isDate,
     isElement,
@@ -42,16 +41,26 @@ export default function() {
     isFinite,
     isInteger,
     isLength,
-    isNaN,
     isNil,
-    isNull,
-    isNumber,
-    isObject,
-    isObjectLike,
-    isPlainObject,
     isRegExp,
     isSafeInteger,
-    isString,
-    isUndefined,
+    // aliases
+    Boolean: isBoolean,
+    String: isString,
+    Number: isNumber,
+    NaN: isNaN,
+    Null: isNull,
+    Object: isObject,
+    Undefined: isUndefined,
+    // extra
+    isDateString(s) {
+      return !isNil(Date.parse(String(s)));
+    },
+    kebabCase(s, p) {
+      return s === _kebabCase(p);
+    },
+    lowerCase(s, p) {
+      return s === _lowerCase(p);
+    },
   };
 }

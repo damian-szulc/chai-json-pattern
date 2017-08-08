@@ -1,21 +1,22 @@
 import parse from './parser';
-import matcher, { addValidators } from './matcher';
+import matcher from './matcher';
+import pluginManager from './plugins/manager';
 
 /**
- * Parse expected pattern and start matching
- * @param  {any} match   [description]
- * @param  {any} object   [description]
- * @param  {string} expected [description]
- * @param  {object} utils    [description]
+ * Parse expected pattern
+ * @param  {any} expected [description]
  * @return {object}          [description]
  */
-function parseAndMatch(match, object, expected, utils) {
+function parseAndMatch(expected) {
+  if (typeof expected !== 'string') {
+    return expected;
+  }
   const { parsed, error } = parse(expected);
   if (error) {
     throw new Error(error);
   }
 
-  return match(object, parsed, utils);
+  return parsed;
 }
 
 /**
@@ -28,7 +29,10 @@ export const chaiJsonPattern = function(_chai, utils) {
 
   _chai.Assertion.addMethod('matchPattern', function(expected) {
     const object = utils.flag(this, 'object');
-    const [isValid, exp, obj] = parseAndMatch(match, object, expected, utils);
+
+    const expectedObj = parseAndMatch(expected);
+  
+    const [isValid, exp, obj] = match(object, expectedObj, utils);
 
     this.assert(
       isValid,
@@ -42,8 +46,8 @@ export const chaiJsonPattern = function(_chai, utils) {
 };
 
 export default plugin => {
-  addValidators(plugin);
+  pluginManager.extend(plugin);
   return chaiJsonPattern;
 };
 
-export const addPlugin = addValidators;
+export const extend = pluginManager.extend;

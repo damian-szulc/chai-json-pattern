@@ -4,13 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-
-exports.addValidators = addValidators;
 
 var _constants = require('./constants');
 
@@ -18,22 +12,17 @@ var _joinValidators = require('./helpers/joinValidators');
 
 var _joinValidators2 = _interopRequireDefault(_joinValidators);
 
+var _manager = require('./plugin/manager');
+
+var _manager2 = _interopRequireDefault(_manager);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-var plugins = {
-  string: function string(target) {
-    return typeof target === 'string';
-  },
-  number: function number(target) {
-    return typeof target === 'number';
-  }
-};
-
 exports.default = function (utils) {
   /**
-  * Check wheater suppleid item is type
+  * Check wheater supplied item is type
   * @param  {any}  target [description]
   * @param  {string}  type   [description]
   * @return {Boolean}        [description]
@@ -66,12 +55,27 @@ exports.default = function (utils) {
     return utils.type(target).toUpperCase() === 'OBJECT' && target[_constants.LIKE];
   };
 
-  var getValidator = function getValidator(name) {
-    var validator = plugins[name];
-    if (!name || !validator) {
-      throw new Error('ChaiJsonPattern: Validator \'' + name + '\' not found');
+  /**
+   * Get arguments to command
+   * @param {array|any} args
+   * @return {any} command arg
+   */
+  var getCommandArgs = function getCommandArgs(args) {
+    if (!args) {
+      return [];
     }
-    return validator;
+    return args.map(function (arg) {
+      if (arg === _constants.TRUE) {
+        return true;
+      }
+      if (arg === _constants.FALSE) {
+        return false;
+      }
+      if (arg === _constants.NULL) {
+        return null;
+      }
+      return arg;
+    });
   };
 
   var service = {
@@ -86,14 +90,14 @@ exports.default = function (utils) {
       var generateExpected = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
 
       if (!isValidator(expected)) {
-        return [false, ''];
+        return service.matchDefault(object, expected);
       }
       // match command
-      if (isType(expected, _constants.COMMAND)) {
-        var commandName = expected[_constants.COMMAND];
-        var validator = getValidator(commandName);
+      if (isType(expected, _constants.COMMAND) || utils.type(expected).toUpperCase() === 'FUNCTION') {
+        // when passing an object, allow using custom
+        var validator = utils.type(expected).toUpperCase() === 'FUNCTION' ? expected : _manager2.default.get(expected[_constants.COMMAND]);
 
-        var isValid = !!validator.apply(undefined, [object].concat(_toConsumableArray(expected[_constants.COMMAND_ARGS] || [])));
+        var isValid = !!validator.apply(undefined, [object].concat(_toConsumableArray(getCommandArgs(expected[_constants.COMMAND_ARGS]))));
 
         return [isValid, isValid && generateExpected ? object : (0, _joinValidators2.default)(expected)];
       }
@@ -110,7 +114,7 @@ exports.default = function (utils) {
         return [_isValid, _isValid && generateExpected ? object : (0, _joinValidators2.default)(expected)];
       }
 
-      throw Error('ChaiJsonPattern: Unknow command validation');
+      return service.matchDefault(object, expected);
     },
 
 
@@ -147,7 +151,7 @@ exports.default = function (utils) {
       if (isType(object, 'object')) {
         var isLikeValid = true;
         Object.keys(object).forEach(function (key) {
-          if (!expectedValues[key]) {
+          if (!expectedValues.hasOwnProperty(key)) {
             // not valid if its extra property without ...
             if (!isLiked) {
               isLikeValid = false;
@@ -157,14 +161,21 @@ exports.default = function (utils) {
             }
           }
         });
-
         isValid = isValid && isLikeValid;
       } else {
         isValid = false;
       }
-
       return [isValid, expectedValues];
     },
+
+
+    /**
+     * Match array
+     * @param {any} target
+     * @param {array} expected
+     * @param {boolean} validate
+     * @return {array} matche results
+     */
     matchArray: function matchArray(target, expected) {
       var validate = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
 
@@ -194,30 +205,38 @@ exports.default = function (utils) {
           return sum;
         }, [validate, []]);
       }
-      // LIKE operator as last element
-      if (expected[expected.length - 1] === _constants.LIKE) {
-        // delete last element
-        expected.splice(-1, 1);
-        var expectedValues = expected.map(function (item, index) {
-          return service.match(target[index], item);
-        }, validate).reduce(function (sum, _ref3) {
-          var _ref4 = _slicedToArray(_ref3, 2),
-              valid = _ref4[0],
-              expect = _ref4[1];
-
-          sum[0] = sum[0] && valid;
-          sum[1].push(expect);
-          return sum;
-        }, [validate, []]);
-
-        return [expectedValues[0], expectedValues[1].concat(target.slice(expectedValues[1].length) || [])];
-      }
       // LIKE operator as first element
       if (expected[0] === _constants.LIKE) {
         throw new Error('ChaiJsonPattern: Not implemented yet');
       }
 
-      throw new Error('ChaiJsonPattern: Unknow array validation');
+      var expectedAtTheEnd = false;
+      // LIKE operator as last element
+      if (expected[expected.length - 1] === _constants.LIKE) {
+        // delete last element
+        expected.splice(-1, 1);
+        expectedAtTheEnd = true;
+      }
+
+      var expectedValues = expected.map(function (item, index) {
+        return service.match(target[index], item);
+      }, validate).reduce(function (sum, _ref3) {
+        var _ref4 = _slicedToArray(_ref3, 2),
+            valid = _ref4[0],
+            expect = _ref4[1];
+
+        sum[0] = sum[0] && valid;
+        sum[1].push(expect);
+        return sum;
+      }, [validate, []]);
+
+      if (expectedAtTheEnd) {
+        return [expectedValues[0], expectedValues[1].concat(target.slice(expectedValues[1].length) || [])];
+      }
+
+      var isValid = expectedValues[0] && expectedValues[1].length === target.length;
+
+      return [isValid, expectedValues[1]];
     },
 
 
@@ -231,6 +250,15 @@ exports.default = function (utils) {
     matchDefault: function matchDefault(object, expected) {
       var validate = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
 
+      if (expected === _constants.TRUE) {
+        return [object === true, true];
+      }
+      if (expected === _constants.FALSE) {
+        return [object === false, false];
+      }
+      if (expected === _constants.NULL) {
+        return [object === null, null];
+      }
       if (object === expected) {
         return [validate, expected];
       }
@@ -275,15 +303,3 @@ exports.default = function (utils) {
     return [isValid, exp, object];
   };
 };
-/**
- * Add validator
- * @param {object} validators
- */
-
-
-function addValidators(validators) {
-  if ((typeof validators === 'undefined' ? 'undefined' : _typeof(validators)) !== 'object') {
-    throw new Error('ChaiJsonPattern: suplied wrong validators');
-  }
-  plugins = _extends({}, plugins, validators);
-}

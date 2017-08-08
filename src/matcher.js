@@ -9,16 +9,11 @@ import {
   AND,
 } from './constants';
 import joinValidators from './helpers/joinValidators';
-
-let plugins = {
-  string: target => typeof target === 'string',
-  number: target => typeof target === 'number',
-};
-
+import pluginManager from './plugins/manager';
 
 export default utils => {
   /**
-  * Check wheater suppleid item is type
+  * Check wheater supplied item is type
   * @param  {any}  target [description]
   * @param  {string}  type   [description]
   * @return {Boolean}        [description]
@@ -42,7 +37,8 @@ export default utils => {
   const isValidator = function(target) {
     return isType(target, COMMAND)
       || isType(target, OR)
-      || isType(target, AND);
+      || isType(target, AND)
+      || isType(target, 'function');
   };
 
   /**
@@ -55,19 +51,12 @@ export default utils => {
       && target[LIKE];
   };
 
-  const getValidator = function(name) {
-    const validator = plugins[name];
-    if (!name || !validator) {
-      throw new Error(`ChaiJsonPattern: Validator '${name}' not found`);
-    }
-    return validator;
-  };
-
   /**
    * Get arguments to command
    * @param {array|any} args
+   * @return {any} command arg
    */
-  const getCommandArgs = (args) => {
+  const getCommandArgs = args => {
     if (!args) {
       return [];
     }
@@ -98,9 +87,11 @@ export default utils => {
         return service.matchDefault(object, expected);
       }
       // match command
-      if (isType(expected, COMMAND)) {
-        const commandName = expected[COMMAND];
-        const validator = getValidator(commandName);
+      if (isType(expected, COMMAND) || utils.type(expected).toUpperCase() === 'FUNCTION') {
+        // when passing an object, allow using custom
+        const validator = utils.type(expected).toUpperCase() === 'FUNCTION'
+          ? expected
+          : pluginManager.get(expected[COMMAND]);
 
         const isValid = !!validator(object, ...getCommandArgs(expected[COMMAND_ARGS]));
 
@@ -163,6 +154,13 @@ export default utils => {
       return [isValid, expectedValues];
     },
 
+    /**
+     * Match array
+     * @param {any} target
+     * @param {array} expected
+     * @param {boolean} validate
+     * @return {array} matche results
+     */
     matchArray(target, expected, validate = true) {
       // expected array, target is not an array
       if (!isType(target, 'array')) {
@@ -184,26 +182,34 @@ export default utils => {
             return sum;
           }, [validate, []]);
       }
-      // LIKE operator as last element
-      if (expected[expected.length - 1] === LIKE) {
-        // delete last element
-        expected.splice(-1, 1);
-        const expectedValues = expected
-          .map((item, index) => service.match(target[index], item), validate)
-          .reduce((sum, [valid, expect]) => {
-            sum[0] = sum[0] && valid;
-            sum[1].push(expect);
-            return sum;
-          }, [validate, []]);
-
-        return [expectedValues[0], expectedValues[1].concat(target.slice(expectedValues[1].length) || [])];
-      }
       // LIKE operator as first element
       if (expected[0] === LIKE) {
         throw new Error('ChaiJsonPattern: Not implemented yet');
       }
 
-      throw new Error('ChaiJsonPattern: Unknow array validation');
+      let expectedAtTheEnd = false;
+      // LIKE operator as last element
+      if (expected[expected.length - 1] === LIKE) {
+        // delete last element
+        expected.splice(-1, 1);
+        expectedAtTheEnd = true;
+      }
+
+      const expectedValues = expected
+        .map((item, index) => service.match(target[index], item), validate)
+        .reduce((sum, [valid, expect]) => {
+          sum[0] = sum[0] && valid;
+          sum[1].push(expect);
+          return sum;
+        }, [validate, []]);
+
+      if (expectedAtTheEnd) {
+        return [expectedValues[0], expectedValues[1].concat(target.slice(expectedValues[1].length) || [])];
+      }
+
+      const isValid = expectedValues[0] && expectedValues[1].length === target.length;
+
+      return [isValid, expectedValues[1]];
     },
 
     /**
@@ -266,16 +272,3 @@ export default utils => {
     ];
   };
 };
-/**
- * Add validator
- * @param {object} validators
- */
-export function addValidators(validators) {
-  if (typeof validators !== 'object') {
-    throw new Error('ChaiJsonPattern: suplied wrong validators');
-  }
-  plugins = {
-    ...plugins,
-    ...validators,
-  };
-}

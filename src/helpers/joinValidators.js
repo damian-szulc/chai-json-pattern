@@ -87,6 +87,16 @@ const service = {
       return service.joinArray(validator[AND], 'AND', depth);
     }
   },
+
+  join2(validator) {
+    const a = function() {};
+    // a.__proto__.toString = function() { return 'sadsa'; };
+    // a.prototype.toString = function() { return 'sadsa'; };
+    // a.toString = function() { return 'sadsa'; };
+    // a.prototype = b;
+    console.log(Object.prototype.toString.call(a));
+    return a;
+  },
 };
 
 export default service.join;

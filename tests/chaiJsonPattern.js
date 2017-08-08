@@ -72,7 +72,7 @@ describe('chaiJsonPattern', function() {
     });
   });
 
-  describe('array', function() {
+  describe('matches array', function() {
     it('matches one string', function() {
       const object = [
         'item1',
@@ -84,7 +84,7 @@ describe('chaiJsonPattern', function() {
       `);
     });
 
-    it('one validator, matches more then one elements', function() {
+    it('one validator, matches more all elements', function() {
       const object = [
         {
           name: 'as',
@@ -120,6 +120,79 @@ describe('chaiJsonPattern', function() {
             "name": "as"
           },
           ...
+        ]
+      `);
+    });
+
+    it('matches two elements', function() {
+      const object = [
+        'item1',
+        'item2',
+      ];
+      expect(object).to.matchPattern(`
+        [
+          "item1",
+          "item2"
+        ]
+      `);
+    });
+
+    it('matches two first elements', function() {
+      const object = [
+        'item1',
+        'item2',
+        'item3',
+      ];
+      expect(object).to.matchPattern(`
+        [
+          "item1",
+          "item2",
+          ...
+        ]
+      `);
+    });
+
+    it('matches first  three elements', function() {
+      const object = [
+        'item1',
+        'item2',
+        'item3',
+      ];
+      expect(object).to.matchPattern(`
+        [
+          "item1",
+          "item2",
+          "item3"
+        ]
+      `);
+    });
+
+    it('matches first  three elements with like operator', function() {
+      const object = [
+        'item1',
+        'item2',
+        'item3',
+      ];
+      expect(object).to.matchPattern(`
+        [
+          "item1",
+          "item2",
+          "item3",
+          ...
+        ]
+      `);
+    });
+
+    it('not matches array different sizes arrays', function() {
+      const object = [
+        'item1',
+        'item2',
+        'item3',
+      ];
+      expect(object).not.to.matchPattern(`
+        [
+          "item1",
+          "item2"
         ]
       `);
     });
@@ -181,7 +254,7 @@ describe('chaiJsonPattern', function() {
       expect(object).to.matchPattern(`
         {
           "id": null,
-          "name": true OR false OR number OR string OR null,
+          "name": true OR false OR Number OR String OR null,
         }
       `);
     });
@@ -194,7 +267,7 @@ describe('chaiJsonPattern', function() {
       };
       expect(object).to.matchPattern(`
         {
-          "id": string
+          "id": String
         }
       `);
     });
@@ -205,7 +278,7 @@ describe('chaiJsonPattern', function() {
       };
       expect(object).to.matchPattern(`
         {
-          "id": number
+          "id": Number
         }
       `);
     });
@@ -217,8 +290,8 @@ describe('chaiJsonPattern', function() {
       };
       expect(object).to.matchPattern(`
         {
-          "id": number OR string,
-          "name": number OR string
+          "id": Number OR String,
+          "name": Number OR String
         }
       `);
     });
@@ -230,10 +303,59 @@ describe('chaiJsonPattern', function() {
       };
       expect(object).to.matchPattern(`
         {
-          "id": number AND ( inRange(2, 3) OR inRange(5, 6) ),
-          "name": number OR string
+          "id": Number AND ( inRange(2, 3) OR inRange(5, 6) ),
+          "name": Number OR String
         }
       `);
+    });
+  });
+
+  describe('validate passed object', function() {
+    it('matches strings', function() {
+      const object = {
+        id: 'test',
+      };
+      expect(object).to.matchPattern({
+        id: 'test',
+      });
+    });
+
+    it('matches number', function() {
+      const object = {
+        id: 12,
+      };
+      expect(object).to.matchPattern({
+        id: 12,
+      });
+    });
+
+    it('matches booleans', function() {
+      const object = {
+        test: true,
+        test2: false,
+      };
+      expect(object).to.matchPattern({
+        test: true,
+        test2: false,
+      });
+    });
+
+    it('matches nulls', function() {
+      const object = {
+        test: null,
+      };
+      expect(object).to.matchPattern({
+        test: null,
+      });
+    });
+
+    it('matches custom validation functions', function() {
+      const object = {
+        test: 123,
+      };
+      expect(object).to.matchPattern({
+        test: arg => arg === 123,
+      });
     });
   });
 });

@@ -4,9 +4,24 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 var _constants = require('../constants');
 
 var service = {
+  stringifyPrimitive: function stringifyPrimitive(arg) {
+    if (arg === _constants.TRUE) {
+      return true;
+    }
+    if (arg === _constants.FALSE) {
+      return false;
+    }
+    if (arg === _constants.NULL) {
+      return null;
+    }
+    return JSON.stringify(arg);
+  },
+
   /**
    * Join command arguments
    * @param  {array|null} args [description]
@@ -16,9 +31,7 @@ var service = {
     if (!args) {
       return '';
     }
-    var joinedArgs = args.map(function (arg) {
-      return JSON.stringify(arg);
-    }).join(', ');
+    var joinedArgs = args.map(service.stringifyPrimitive).join(', ');
     return '(' + joinedArgs + ')';
   },
 
@@ -59,9 +72,12 @@ var service = {
    * @param  {Number} [depth=0]      depth of command join
    * @return {string}                [description]
    */
-  join: function join() {
-    var validator = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  join: function join(validator) {
     var depth = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+
+    if ((typeof validator === 'undefined' ? 'undefined' : _typeof(validator)) !== 'object' || validator === null) {
+      return service.stringifyPrimitive(validator);
+    }
 
     if (validator[_constants.COMMAND]) {
       return service.joinCommand(validator);
@@ -74,6 +90,15 @@ var service = {
     if (validator[_constants.AND]) {
       return service.joinArray(validator[_constants.AND], 'AND', depth);
     }
+  },
+  join2: function join2(validator) {
+    var a = function a() {};
+    // a.__proto__.toString = function() { return 'sadsa'; };
+    // a.prototype.toString = function() { return 'sadsa'; };
+    // a.toString = function() { return 'sadsa'; };
+    // a.prototype = b;
+    console.log(Object.prototype.toString.call(a));
+    return a;
   }
 };
 

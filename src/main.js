@@ -1,6 +1,6 @@
-import init, { addPlugin, chaiJsonPattern } from './chaiJsonPattern';
-import lodashPlugin from './lodashPlugin';
+import init, { extend, chaiJsonPattern } from './chaiJsonPattern';
+import basePlugin from './plugins/base';
 
-export default init(lodashPlugin());
+export default init(basePlugin());
 
-export { chaiJsonPattern, addPlugin };
+export { chaiJsonPattern, extend };

@@ -158,8 +158,8 @@ describe('parser', () => {
       const { parsed, error } = parser(toParse);
       expect(parsed).to.deep.equal({
         name: { [OR]: [
-          { [COMMAND]: 'die', [COMMAND_ARGS]: null },
           { [COMMAND]: 'test', [COMMAND_ARGS]: null },
+          { [COMMAND]: 'die', [COMMAND_ARGS]: null },
         ] },
       });
       expect(error).to.be.undefined;
@@ -174,8 +174,8 @@ describe('parser', () => {
       const { parsed, error } = parser(toParse);
       expect(parsed).to.deep.equal({
         name: { [AND]: [
-          { [COMMAND]: 'die', [COMMAND_ARGS]: null },
           { [COMMAND]: 'test', [COMMAND_ARGS]: null },
+          { [COMMAND]: 'die', [COMMAND_ARGS]: null },
         ] },
       });
       expect(error).to.be.undefined;
@@ -190,11 +190,11 @@ describe('parser', () => {
       const { parsed, error } = parser(toParse);
       expect(parsed).to.deep.equal({
         name: { [AND]: [
-          { [OR]: [
-            { [COMMAND]: 'stop', [COMMAND_ARGS]: null },
-            { [COMMAND]: 'start', [COMMAND_ARGS]: null },
-          ] },
           { [COMMAND]: 'test', [COMMAND_ARGS]: null },
+          { [OR]: [
+            { [COMMAND]: 'start', [COMMAND_ARGS]: null },
+            { [COMMAND]: 'stop', [COMMAND_ARGS]: null },
+          ] },
         ] },
       });
       expect(error).to.be.undefined;

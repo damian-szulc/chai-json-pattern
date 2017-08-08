@@ -4,6 +4,19 @@ chai.use(jsonPattern);
 
 describe('chaiJsonPattern', function() {
   describe('object', function() {
+    it('matches empty object', function() {
+      const object = {
+        test: {},
+        test2: {},
+      };
+      expect(object).to.matchPattern(`
+        {
+          "test": {},
+          "test2": { }
+        }
+      `);
+    });
+
     it('matches strings', function() {
       const object = {
         id: 'test',
@@ -73,6 +86,18 @@ describe('chaiJsonPattern', function() {
   });
 
   describe('matches array', function() {
+    it('matches empty array', function() {
+      const object = {
+        test: [],
+        test2: [],
+      };
+      expect(object).to.matchPattern(`
+        {
+          "test": [],
+          "test2": [ ]
+        }
+      `);
+    });
     it('matches one string', function() {
       const object = [
         'item1',
@@ -255,6 +280,45 @@ describe('chaiJsonPattern', function() {
         {
           "id": null,
           "name": true OR false OR Number OR String OR null,
+        }
+      `);
+    });
+
+    it('matches objects', function() {
+      const object = {
+        test: { name: 'test' },
+        test2: { name: 'test' },
+      };
+      expect(object).to.matchPattern(`
+        {
+          "test": { "name": "test" } OR { "name": "test1" },
+          "test2": { "name": "test1" } OR { "name": "test" },
+        }
+      `);
+    });
+
+    it('matches arrays', function() {
+      const object = {
+        test: ['test1'],
+        test2: ['test1'],
+      };
+      expect(object).to.matchPattern(`
+        {
+          "test": ["test1"] OR ["test2"],
+          "test2": ["test2"] OR ["test1"],
+        }
+      `);
+    });
+
+    it('matches arrays mixed with objects', function() {
+      const object = {
+        test: ['test1'],
+        test2: { test: 'name' },
+      };
+      expect(object).to.matchPattern(`
+        {
+          "test": ["test1"] OR { "test": "name" },
+          "test2": ["test1"] OR { "test": "name" },
         }
       `);
     });

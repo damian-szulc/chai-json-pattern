@@ -67,7 +67,7 @@ describe('joinValidators', function() {
         },
       ],
     };
-    expect(joinValidators(validator)).to.equal('validatorName("test", 2.32, true) OR test2');
+    expect(joinValidators(validator)).to.equal('test2 OR validatorName("test", 2.32, true)');
   });
 
   it('return joined AND with commands', function() {
@@ -83,10 +83,10 @@ describe('joinValidators', function() {
         },
       ],
     };
-    expect(joinValidators(validator)).to.equal('validatorName("test", 2.32, true) AND test2');
+    expect(joinValidators(validator)).to.equal('test2 AND validatorName("test", 2.32, true)');
   });
 
-  it('return nested commans', function() {
+  it('return nested commands', function() {
     const validator = {
       [AND]: [
         {
@@ -111,6 +111,6 @@ describe('joinValidators', function() {
         },
       ],
     };
-    expect(joinValidators(validator)).to.equal('( test5 OR test2 OR isString(false) ) AND validatorName("test", 2.32, true)');
+    expect(joinValidators(validator)).to.equal('validatorName("test", 2.32, true) AND ( isString(false) OR test2 OR test5 )');
   });
 });

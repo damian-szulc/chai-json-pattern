@@ -1,14 +1,13 @@
+export const LIKE = Symbol('like');
 
-export const LIKE = '__LIKE__';
+export const COMMAND = Symbol('command');
+export const COMMAND_ARGS = Symbol('command-args');
 
-export const COMMAND = '__COMAND__';
-export const COMMAND_ARGS = '__COMAND_ARGS__';
+export const OR = Symbol('or');
+export const AND = Symbol('and');
 
-export const OR = '__OR__';
-export const AND = '__AND__';
-
-export const TRUE = '__TRUE__';
-export const FALSE = '__FALSE__';
-export const NULL = '__NULL__';
+export const TRUE = Symbol('true');
+export const FALSE = Symbol('false');
+export const NULL = Symbol('null');
 
 

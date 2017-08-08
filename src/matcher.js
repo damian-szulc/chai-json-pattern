@@ -21,7 +21,7 @@ export default utils => {
   const isType = function(target, type) {
     const targetType = utils.type(target).toUpperCase();
     // looks for commands, or, and
-    if (targetType === 'OBJECT'
+    if ((targetType === 'OBJECT' || targetType === 'FUNCTION')
         && (type === COMMAND || type === OR || type === AND)) {
       return !!target[type];
     }
@@ -35,10 +35,13 @@ export default utils => {
    * @return {Boolean}        [description]
    */
   const isValidator = function(target) {
-    return isType(target, COMMAND)
+    return (isType(target, 'object')
+    && (
+      isType(target, COMMAND)
       || isType(target, OR)
       || isType(target, AND)
-      || isType(target, 'function');
+    )
+    ) || isType(target, 'function');
   };
 
   /**
@@ -103,7 +106,7 @@ export default utils => {
 
         const fn = expected[OR] ? 'some' : 'every';
 
-        const isValid = expected[type][fn](condition => service.matchCommand(object, condition, false)[0]);
+        const isValid = expected[type][fn](condition => service.match(object, condition, true)[0]);
 
         return [isValid, isValid && generateExpected ? object : joinValidators(expected)];
       }
@@ -165,9 +168,8 @@ export default utils => {
       // expected array, target is not an array
       if (!isType(target, 'array')) {
         // eslint-disable-next-line
-        return [false, expected.map(exp => service.match(undefined, exp, false))];
+        return [false, expected.map(exp => service.match(undefined, exp, false)[1])];
       }
-
       if (expected.length === 1) {
         // PATTERN: [...], means allow any
         if (expected[0] === LIKE) {

@@ -1,4 +1,11 @@
+{
+  const constants = require('../constants.js');
 
+  function getUniqueName(name) {
+    return constants[name];
+  }
+
+}
 JSON_text
   = ws value:value ws { return value; }
 
@@ -22,15 +29,15 @@ value
   = pureFalse
   / pureTrue
   / pureNull
-  / object
-  / array
+  / pureObject
+  / pureArray
   / pureNumber
   / pureString
   / Expression
 
-false = "false" { return "__FALSE__"; }
-null  = "null"  { return "__NULL__";  }
-true  = "true"  { return "__TRUE__";  }
+false = "false" { return getUniqueName('FALSE'); }
+null  = "null"  { return getUniqueName('NULL');  }
+true  = "true"  { return getUniqueName('TRUE');  }
 
 // pure means that its not part of any expresssion
 pureFalse = !( OR / AND) s:false !( OR / AND ) { return s; }
@@ -38,6 +45,7 @@ pureTrue = !( OR / AND) s:true !( OR / AND ) { return s; }
 pureNull = !( OR / AND) s:null !( OR / AND ) { return s; }
 
 // ----- 4. Objects -----
+pureObject = !( OR / AND) s:object !( OR / AND ) { return s; }
 
 object
   = begin_object
@@ -68,6 +76,8 @@ member
     }
 
 // ----- 5. Arrays -----
+pureArray = !( OR / AND) s:array !( OR / AND ) { return s; }
+
 array
   = begin_array
     values:(
@@ -79,16 +89,16 @@ array
 
 array1 =
 	  head:value
-      tail:(value_separator v:value { return v; })*
-      subset:(value_separator s:subset { return s; })?
-      {
-      	const values = [head].concat(tail)
-      	return subset ? values.concat([subset]) : values;
-      }
+    tail:(value_separator v:value { return v; })*
+    subset:(value_separator s:subset { return s; })?
+    {
+    	const values = [head].concat(tail)
+     	return subset ? values.concat([subset]) : values;
+     }
 
 array2 =
       subset:(s:subset value_separator { return s; })?
-	  head:value
+	    head:value
       tail:(value_separator v:value { return v; })*
       {
       	const values = [head].concat(tail)
@@ -170,8 +180,8 @@ command "command"
   = name:LETTERS+ args:command_args?
   	{
         return {
-          __COMAND__: name.join(""),
-          __COMAND_ARGS__: args || null
+          [getUniqueName('COMMAND')]: name.join(""),
+          [getUniqueName('COMMAND_ARGS')]: args || null
         };
     }
 
@@ -196,12 +206,11 @@ args_suported_types = true
 
 Expression
  = head:Term tail:(OR Term )* {
-  	const begin = head.__COMAND__
-    	? [head.__COMAND__]
-        : head;
+  	const begin = head[getUniqueName('COMMAND')]
+    	? [getUniqueName('COMMAND')]
+      : head;
 
-      const a = tail.reduce(function(result, element) {
-
+    const a = tail.reduce(function(result, element) {
       	if (element[1]) {
       		result.push(element[1]);
         }
@@ -210,16 +219,13 @@ Expression
      if (a.length === 0) {
      	return head;
      }
-     return { __OR__: a.concat(head) } ;
+     a.unshift(head);
+     return { [getUniqueName('OR')]: a } ;
    }
 
 Term
   = head:Factor tail:(AND Factor)* {
-  	const begin = head.__COMAND__
-    	? [head.__COMAND__]
-        : head;
-
-      const a = tail.reduce(function(result, element) {
+     const a = tail.reduce(function(result, element) {
       	if (element[1]) {
       		result.push(element[1]);
         }
@@ -229,8 +235,8 @@ Term
      if (a.length === 0) {
      	return head;
      }
-
-     return { __AND__: a.concat(head) } ;
+	 a.unshift(head);
+     return { [getUniqueName('AND')]: a } ;
     }
 
 Factor
@@ -240,15 +246,17 @@ Factor
   / null
   / number
   / string
+  / object
+  / array
   / command
 
 // ----- Core ABNF Rules -----
-subset = ws "..." ws { return "__LIKE__" }
+subset = ws "..." ws { return getUniqueName('LIKE'); }
 
 subsettrailing = value_separator s:subset { return s; }
         		/ s:value_separator { return null; }
 
 // See RFC 4234, Appendix B (http://tools.ietf.org/html/rfc4234).
-LETTERS = [A-z]
+LETTERS = [a-zA-Z]
 DIGIT  = [0-9]
 HEXDIG = [0-9a-f]i

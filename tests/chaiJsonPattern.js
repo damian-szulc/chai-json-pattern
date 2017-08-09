@@ -83,6 +83,55 @@ describe('chaiJsonPattern', function() {
         }
       `);
     });
+
+    it('allows conditional parameters', function() {
+      const object = {
+        user: {
+
+        },
+      };
+      expect(object).to.matchPattern(`
+        {
+          "user": {
+            "name"?: "saome",
+          }
+        }
+      `);
+    });
+
+    it.only('allows object as conditional parameter', function() {
+      const object = {
+        user: {
+          name: {
+            test: 'test',
+          },
+        },
+      };
+      expect(object).to.matchPattern(`
+        {
+          "user": {
+            "name"?: {
+              "test": "test",
+            },
+          }
+        }
+      `);
+    });
+
+    it('fails with conditional parameters', function() {
+      const object = {
+        user: {
+          name: 123,
+        },
+      };
+      expect(object).not.to.matchPattern(`
+        {
+          "user": {
+            "name"?: "saome",
+          }
+        }
+      `);
+    });
   });
 
   describe('matches array', function() {
@@ -367,7 +416,7 @@ describe('chaiJsonPattern', function() {
       };
       expect(object).to.matchPattern(`
         {
-          "id": Number AND ( inRange(2, 3) OR inRange(5, 6) ),
+          "id": Number AND ( range(2, 3) OR range(5, 6) ),
           "name": Number OR String
         }
       `);

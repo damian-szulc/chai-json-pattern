@@ -1,6 +1,27 @@
+import array from './types/array';
+import boolean from './types/boolean';
+import date from './types/date';
+import mixed from './types/mixed';
+import number from './types/number';
+import object from './types/object';
+import string from './types/string';
+
 const manager = () => {
   /**
-   * Object with command matchers
+   * Internal validation functions
+   */
+  const insternalValidators = {
+    ...array,
+    ...boolean,
+    ...date,
+    ...mixed,
+    ...number,
+    ...object,
+    ...string,
+  };
+
+  /**
+   * Object with validators
    */
   let extenstions = {};
 
@@ -29,7 +50,7 @@ const manager = () => {
       if (!name || typeof name !== 'string') {
         throw new Error(`ChaiJsonPattern: Wrong validator name: '${name}'`);
       }
-      const validator = extenstions[name];
+      const validator = insternalValidators[name] || extenstions[name];
       if (!validator) {
         throw new Error(`ChaiJsonPattern: Validator '${name}' not found`);
       }

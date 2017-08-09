@@ -6,7 +6,7 @@ import {
   COMMAND_ARGS,
   OR,
   AND,
-
+  OPTIONAL,
 } from '../constants';
 
 const service = {
@@ -84,6 +84,10 @@ const service = {
 
     if (validator[AND]) {
       return service.joinArray(validator[AND], 'AND', depth);
+    }
+
+    if (validator[OPTIONAL]) {
+      return service.join(validator[OPTIONAL], depth);
     }
 
     if (Array.isArray(validator)) {

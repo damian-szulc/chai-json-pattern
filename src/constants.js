@@ -10,4 +10,6 @@ export const TRUE = Symbol('true');
 export const FALSE = Symbol('false');
 export const NULL = Symbol('null');
 
+export const OPTIONAL = Symbol('optional');
+
 

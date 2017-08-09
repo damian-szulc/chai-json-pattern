@@ -24,14 +24,14 @@ function parseAndMatch(expected) {
  * @param  {any} _chai [description]
  * @param  {object} utils [description]
  */
-export const chaiJsonPattern = function(_chai, utils) {
+const chaiJsonPattern = function(_chai, utils) {
   const match = matcher(utils);
 
   _chai.Assertion.addMethod('matchPattern', function(expected) {
     const object = utils.flag(this, 'object');
 
     const expectedObj = parseAndMatch(expected);
-  
+
     const [isValid, exp, obj] = match(object, expectedObj, utils);
 
     this.assert(
@@ -45,9 +45,6 @@ export const chaiJsonPattern = function(_chai, utils) {
   });
 };
 
-export default plugin => {
-  pluginManager.extend(plugin);
-  return chaiJsonPattern;
-};
+export default chaiJsonPattern;
 
 export const extend = pluginManager.extend;

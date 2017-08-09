@@ -7,6 +7,7 @@ import {
   COMMAND_ARGS,
   OR,
   AND,
+  OPTIONAL,
 } from './constants';
 import joinValidators from './helpers/joinValidators';
 import pluginManager from './plugins/manager';
@@ -129,9 +130,23 @@ export default utils => {
           return;
         }
         const isObject = isType(object, 'object');
+        // handle optional keys
+        let isOptional = false;
+        if (isType(expected[key], 'object') && expected[key].hasOwnProperty(OPTIONAL)) {
+          if (isObject && !object.hasOwnProperty(key)) {
+            delete expected[key];
+            return;
+          }
+
+          isOptional = true;
+        }
+        // if optional, pass only optional value
+        const expectedValue = isOptional ? expected[key][OPTIONAL] : expected[key];
+
         // eslint-disable-next-line
-        const [valid, expValue] = service.match(isObject ? object[key] : undefined, expected[key], isObject);
+        const [valid, expValue] = service.match(isObject ? object[key] : undefined, expectedValue, isObject);
         isValid = isValid && valid;
+
         expectedValues[key] = expValue;
       });
 

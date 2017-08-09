@@ -71,8 +71,8 @@ object
     { return members !== null ? members: {}; }
 
 member
-  = name:pureString name_separator value:value {
-      return { name: name, value: value };
+  = name:pureString opt:QUESTIONMARK? name_separator value:value {
+      return { name: name , value: !opt ? value : { [getUniqueName('OPTIONAL')] : value } };
     }
 
 // ----- 5. Arrays -----
@@ -260,3 +260,4 @@ subsettrailing = value_separator s:subset { return s; }
 LETTERS = [a-zA-Z]
 DIGIT  = [0-9]
 HEXDIG = [0-9a-f]i
+QUESTIONMARK = [?]

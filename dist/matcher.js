@@ -12,7 +12,7 @@ var _joinValidators = require('./helpers/joinValidators');
 
 var _joinValidators2 = _interopRequireDefault(_joinValidators);
 
-var _manager = require('./plugin/manager');
+var _manager = require('./plugins/manager');
 
 var _manager2 = _interopRequireDefault(_manager);
 
@@ -30,7 +30,7 @@ exports.default = function (utils) {
   var isType = function isType(target, type) {
     var targetType = utils.type(target).toUpperCase();
     // looks for commands, or, and
-    if (targetType === 'OBJECT' && (type === _constants.COMMAND || type === _constants.OR || type === _constants.AND)) {
+    if ((targetType === 'OBJECT' || targetType === 'FUNCTION') && (type === _constants.COMMAND || type === _constants.OR || type === _constants.AND)) {
       return !!target[type];
     }
     // other types, like object, array, etc.
@@ -43,7 +43,7 @@ exports.default = function (utils) {
    * @return {Boolean}        [description]
    */
   var isValidator = function isValidator(target) {
-    return isType(target, _constants.COMMAND) || isType(target, _constants.OR) || isType(target, _constants.AND);
+    return isType(target, 'object') && (isType(target, _constants.COMMAND) || isType(target, _constants.OR) || isType(target, _constants.AND)) || isType(target, 'function');
   };
 
   /**
@@ -108,7 +108,7 @@ exports.default = function (utils) {
         var fn = expected[_constants.OR] ? 'some' : 'every';
 
         var _isValid = expected[type][fn](function (condition) {
-          return service.matchCommand(object, condition, false)[0];
+          return service.match(object, condition, true)[0];
         });
 
         return [_isValid, _isValid && generateExpected ? object : (0, _joinValidators2.default)(expected)];
@@ -135,14 +135,28 @@ exports.default = function (utils) {
           return;
         }
         var isObject = isType(object, 'object');
+        // handle optional keys
+        var isOptional = false;
+        if (isType(expected[key], 'object') && expected[key].hasOwnProperty(_constants.OPTIONAL)) {
+          if (isObject && !object.hasOwnProperty(key)) {
+            delete expected[key];
+            return;
+          }
+
+          isOptional = true;
+        }
+        // if optional, pass only optional value
+        var expectedValue = isOptional ? expected[key][_constants.OPTIONAL] : expected[key];
+
         // eslint-disable-next-line
 
-        var _service$match = service.match(isObject ? object[key] : undefined, expected[key], isObject),
+        var _service$match = service.match(isObject ? object[key] : undefined, expectedValue, isObject),
             _service$match2 = _slicedToArray(_service$match, 2),
             valid = _service$match2[0],
             expValue = _service$match2[1];
 
         isValid = isValid && valid;
+
         expectedValues[key] = expValue;
       });
 
@@ -183,10 +197,9 @@ exports.default = function (utils) {
       if (!isType(target, 'array')) {
         // eslint-disable-next-line
         return [false, expected.map(function (exp) {
-          return service.match(undefined, exp, false);
+          return service.match(undefined, exp, false)[1];
         })];
       }
-
       if (expected.length === 1) {
         // PATTERN: [...], means allow any
         if (expected[0] === _constants.LIKE) {

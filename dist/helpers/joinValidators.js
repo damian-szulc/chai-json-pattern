@@ -55,7 +55,7 @@ var service = {
    * @return {string}          [description]
    */
   joinArray: function joinArray(commands, joiner, depth) {
-    var joined = commands.reverse().map(function (command) {
+    var joined = commands.map(function (command) {
       return service.join(command, depth + 1);
     }).join(' ' + joiner + ' ');
 
@@ -90,15 +90,23 @@ var service = {
     if (validator[_constants.AND]) {
       return service.joinArray(validator[_constants.AND], 'AND', depth);
     }
-  },
-  join2: function join2(validator) {
-    var a = function a() {};
-    // a.__proto__.toString = function() { return 'sadsa'; };
-    // a.prototype.toString = function() { return 'sadsa'; };
-    // a.toString = function() { return 'sadsa'; };
-    // a.prototype = b;
-    console.log(Object.prototype.toString.call(a));
-    return a;
+
+    if (validator[_constants.OPTIONAL]) {
+      return service.join(validator[_constants.OPTIONAL], depth);
+    }
+
+    if (Array.isArray(validator)) {
+      return JSON.stringify(validator.map(function (item) {
+        return service.join(item, 0);
+      }));
+    }
+
+    var toStringify = {};
+    Object.keys(validator).forEach(function (key) {
+      toStringify[key] = service.join(validator[key], 0);
+    });
+
+    return JSON.stringify(toStringify);
   }
 };
 

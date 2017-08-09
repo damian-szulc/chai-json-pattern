@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 /**
- * Create error message
+ * Format error message
  * @param  {object} error [description]
  * @return {string}       [description]
  */

@@ -1,5 +1,5 @@
 import chai, { expect } from 'chai';
-import jsonPattern from '../src/main';
+import jsonPattern from '../dist/main';
 chai.use(jsonPattern);
 
 describe('chaiJsonPattern', function() {
@@ -99,7 +99,7 @@ describe('chaiJsonPattern', function() {
       `);
     });
 
-    it.only('allows object as conditional parameter', function() {
+    it('allows object as conditional parameter', function() {
       const object = {
         user: {
           name: {

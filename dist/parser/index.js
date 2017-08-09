@@ -4,9 +4,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _pegjs = require('./pegjs');
+var _parser = require('./parser');
 
-var _pegjs2 = _interopRequireDefault(_pegjs);
+var _parser2 = _interopRequireDefault(_parser);
 
 var _errorMessage = require('./errorMessage');
 
@@ -24,7 +24,7 @@ var parser = function parser(expected) {
   var error = void 0;
 
   try {
-    parsed = _pegjs2.default.parse(expected);
+    parsed = _parser2.default.parse(expected);
   } catch (e) {
     error = (0, _errorMessage2.default)(e);
   }

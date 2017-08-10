@@ -6,7 +6,7 @@ const service = {
    * @param {any} s validation target
    * @return {boolean}
    */
-  Boolean: isArray,
+  Array: isArray,
 };
 
 export default service;

@@ -6,14 +6,14 @@ const service = {
    * @param {any} s validation target
    * @return {boolean}
    */
-  date: isDate,
+  Date: isDate,
 
   /**
    * Determines whether suplied date is in ISO format
    * @param {any} s validation target
    * @return {boolean}
    */
-  isDateString(s) {
+  dateString(s) {
     return !isNil(Date.parse(String(s)));
   },
 };

@@ -7,7 +7,7 @@ const service = {
    * @param {any} s validation target
    * @return {boolean}
    */
-  nill: isNil,
+  nil: isNil,
 
   /**
    * Determines whether validating element is null

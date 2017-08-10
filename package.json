@@ -17,18 +17,29 @@
     "name": "Damian Szulc"
   },
   "repository": {
-    "type": "git"
+    "type": "git",
+    "url": "git+https://github.com/damian-brainhub/chai-json-pattern.git"
   },
   "keywords": [
-    "testing",
+    "array",
     "chai",
     "chai-plugin",
-    "json-pattern"
+    "chai-json",
+    "chai-deep-match",
+    "cucumber",
+    "deep",
+    "deep-eql",
+    "deep-match",
+    "integration",
+    "JSON",
+    "matching",
+    "mocha",
+    "test"
   ],
-  "engines": {
-    "node": ">= 4"
-  },
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/damian-brainhub/chai-json-pattern/issues"
+  },
   "devDependencies": {
     "babel-cli": "^6.22.2",
     "babel-core": "^6.25.0",

@@ -12,7 +12,13 @@ var service = {
    * @param {any} s validation target
    * @return {boolean}
    */
-  Object: _lodash.isObject
+  Object: _lodash.isObject,
+  /**
+   * Determines whether validating element is object
+   * @param {any} s validation target
+   * @return {boolean}
+   */
+  PlainObject: _lodash.isPlainObject
 };
 
 exports.default = service;

@@ -55,6 +55,21 @@ const service = {
    */
   endsWith,
 
+  /**
+   * Determines whether the specified string is uuid
+   * @param {any} source source
+   * @param {any} version version of uuid
+   */
+  uuid(source, version) {
+    const ver = version
+      ? [1, 2, 3, 4, 5].find(v => v === Number(version))
+      : null;
+
+    const isUuid = new RegExp(`^[0-9a-f]{8}-[0-9a-f]{4}-[${ver || '1-5'}][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$`, 'i');
+    return service.String(source)
+      && isUuid.test(source);
+  },
+
 };
 
 export default service;

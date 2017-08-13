@@ -64,8 +64,21 @@ var service = {
    * @param {any} s source
    * @param {any} p pattern
    */
-  endsWith: _lodash.endsWith
+  endsWith: _lodash.endsWith,
 
+  /**
+   * Determines whether the specified string is uuid
+   * @param {any} source source
+   * @param {any} version version of uuid
+   */
+  uuid: function uuid(source, version) {
+    var ver = version ? [1, 2, 3, 4, 5].find(function (v) {
+      return v === Number(version);
+    }) : null;
+
+    var isUuid = new RegExp('^[0-9a-f]{8}-[0-9a-f]{4}-[' + (ver || '1-5') + '][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$', 'i');
+    return service.String(source) && isUuid.test(source);
+  }
 };
 
 exports.default = service;

@@ -385,6 +385,17 @@ describe('chaiJsonPattern', function() {
       `);
     });
 
+    it('matches UUID', function() {
+      const object = {
+        id: '017d716b-262b-4c03-b703-e2955f674bac',
+      };
+      expect(object).to.matchPattern(`
+        {
+          "id": uuid(4)
+        }
+      `);
+    });
+
     it('matches number', function() {
       const object = {
         id: 123.231,

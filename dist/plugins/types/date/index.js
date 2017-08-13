@@ -12,14 +12,14 @@ var service = {
    * @param {any} s validation target
    * @return {boolean}
    */
-  date: _lodash.isDate,
+  Date: _lodash.isDate,
 
   /**
    * Determines whether suplied date is in ISO format
    * @param {any} s validation target
    * @return {boolean}
    */
-  isDateString: function isDateString(s) {
+  dateString: function dateString(s) {
     return !(0, _lodash.isNil)(Date.parse(String(s)));
   }
 };

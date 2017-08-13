@@ -14,7 +14,7 @@ var service = {
    * @param {any} s validation target
    * @return {boolean}
    */
-  nill: _lodash.isNil,
+  nil: _lodash.isNil,
 
   /**
    * Determines whether validating element is null

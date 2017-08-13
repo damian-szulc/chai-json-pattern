@@ -12,7 +12,7 @@ var service = {
    * @param {any} s validation target
    * @return {boolean}
    */
-  Boolean: _lodash.isArray
+  Array: _lodash.isArray
 };
 
 exports.default = service;

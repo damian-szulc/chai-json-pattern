@@ -29,6 +29,7 @@
             - [`uppercase`](#uppercase)
             - [`startsWith(target)`](#startswithtarget)
             - [`endsWith(target)`](#endswithtarget)
+            - [`uuid([version])`](#uuidversion)
         - [`numbers validation`](#numbers-validation)
             - [`Number`](#number)
             - [`Integer`](#integer)
@@ -433,6 +434,20 @@ const value = {
 
 expect(value).to.matchPattern(`{
     "item": endsWith("box"),
+}`);
+```
+
+#### `uuid([version])`
+Determines whether the value is valid uuid, where:
+- `version` is number between 1-5, specifing acceptable uuid version. If no `version` is specified then all versions are acceptable.
+
+```js
+const value = {
+    id: "2cb07ed8-8e7f-4926-9fa3-6458b5ce14f8"
+};
+
+expect(value).to.matchPattern(`{
+    "id": uuid(4),
 }`);
 ```
 

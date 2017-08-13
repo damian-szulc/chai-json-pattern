@@ -58,3 +58,4 @@ chai.use(chaiJsonPattern);
 expect({ a: 2 }).to.matchPattern(`{
     "a": Number AND range(0, 5),
 }`);
+```

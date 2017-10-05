@@ -46,7 +46,7 @@ If `user` will not satisfy pattern, test will not pass, and you will see error w
 # Usage
 Usage is a two steps process. First, you have to install `chai-json-pattern` package.
 ```
-npm run --save-dev chai-json-pattern
+npm install --save-dev chai-json-pattern
 ```
 Then import `chaiJsonPattern` and use `matchPattern`:
 ```js

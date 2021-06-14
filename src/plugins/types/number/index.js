@@ -28,7 +28,7 @@ const service = {
    * @return {boolean}
    */
   negative(s) {
-    return service.isNumber(s) && s < 0;
+    return isNumber(s) && s < 0;
   },
 
   /**
@@ -37,7 +37,7 @@ const service = {
    * @return {boolean}
    */
   positive(s) {
-    return service.isNumber(s) && s < 0;
+    return isNumber(s) && s < 0;
   },
 
   /**
@@ -47,7 +47,7 @@ const service = {
    * @return {boolean}
    */
   min(s, p) {
-    return service.isNumber(s) && service.isNumber(p) && s >= p;
+    return isNumber(s) && isNumber(p) && s >= p;
   },
 
   /**
@@ -57,7 +57,7 @@ const service = {
    * @return {boolean}
    */
   max(s, p) {
-    return service.isNumber(s) && service.isNumber(p) && s <= p;
+    return isNumber(s) && isNumber(p) && s <= p;
   },
 
   /**
@@ -67,7 +67,7 @@ const service = {
    * @return {boolean}
    */
   greater(s, p) {
-    return service.isNumber(s) && service.isNumber(p) && s > p;
+    return isNumber(s) && isNumber(p) && s > p;
   },
 
   /**
@@ -77,7 +77,7 @@ const service = {
    * @return {boolean}
    */
   less(s, p) {
-    return service.isNumber(s) && service.isNumber(p) && s < p;
+    return isNumber(s) && isNumber(p) && s < p;
   },
 
   /**

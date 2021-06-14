@@ -34,7 +34,7 @@ var service = {
    * @return {boolean}
    */
   negative: function negative(s) {
-    return service.isNumber(s) && s < 0;
+    return (0, _lodash.isNumber)(s) && s < 0;
   },
 
 
@@ -44,7 +44,7 @@ var service = {
    * @return {boolean}
    */
   positive: function positive(s) {
-    return service.isNumber(s) && s < 0;
+    return (0, _lodash.isNumber)(s) && s < 0;
   },
 
 
@@ -55,7 +55,7 @@ var service = {
    * @return {boolean}
    */
   min: function min(s, p) {
-    return service.isNumber(s) && service.isNumber(p) && s >= p;
+    return (0, _lodash.isNumber)(s) && (0, _lodash.isNumber)(p) && s >= p;
   },
 
 
@@ -66,7 +66,7 @@ var service = {
    * @return {boolean}
    */
   max: function max(s, p) {
-    return service.isNumber(s) && service.isNumber(p) && s <= p;
+    return (0, _lodash.isNumber)(s) && (0, _lodash.isNumber)(p) && s <= p;
   },
 
 
@@ -77,7 +77,7 @@ var service = {
    * @return {boolean}
    */
   greater: function greater(s, p) {
-    return service.isNumber(s) && service.isNumber(p) && s > p;
+    return (0, _lodash.isNumber)(s) && (0, _lodash.isNumber)(p) && s > p;
   },
 
 
@@ -88,7 +88,7 @@ var service = {
    * @return {boolean}
    */
   less: function less(s, p) {
-    return service.isNumber(s) && service.isNumber(p) && s < p;
+    return (0, _lodash.isNumber)(s) && (0, _lodash.isNumber)(p) && s < p;
   },
 
 
